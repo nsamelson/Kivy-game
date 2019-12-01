@@ -1,0 +1,52 @@
+<MyGrid>:
+    rows:2
+    Label:
+        text: "test"
+        size_hint : 0.5,1
+    Counter
+<LabelMoves@Label>:
+    size_hint : 0.5,1
+
+<LabelScore@Label>:
+    size_hint : 0.5,1
+
+<ImageButton>:
+    allow_stretch: True
+    keep_ratio: True
+    #on_press: root.counter(moves,score)  # ImageButton has no attribute "counter"
+
+
+
+<Counter>:
+    GridLayout:
+        rows :2
+        GridLayout:
+            size_hint: 1,.3
+            cols:4
+            Label:
+                text:"Moves :"
+
+            LabelMoves:
+                id: moves
+                text:"0"
+
+            Label:
+                text:"Score :"
+
+            LabelScore:
+                id: score
+                text: "00"
+        GridLayout:
+            cols:2
+            ImageButton:
+                group: "a1"
+                on_press: root.counter(moves,score) # What I'm trying not to copy paste 100 times is it also possible for the 100 buttns?)
+            ImageButton:
+                group :"a2"
+                on_press: root.counter(moves,score)
+            ImageButton:
+                group: "a3"
+                on_press: root.counter(moves,score)
+            ImageButton:
+                group: "a4"
+                on_press: root.counter(moves,score)
