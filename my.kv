@@ -1,62 +1,61 @@
-
 WindowManager:
-
     FirstWindow:
+        name: "first"
     SecondWindow:
+        name: "second"
     ThirdWindow:
+        name: "third"
     FourthWindow:
-    Player2Window:
-    TransitionWindow:
-
+        name: "fourth"
 
 <LabelMoves@Label>:
     size_hint : 0.5,1
+<LabelSink@Label>:
+    size_hint: .5,.3
+
 
 <LabelScore@Label>:
     size_hint : 0.5,1
+    text_size: cm(4), cm(4)
+<Button>:
+    font_size:30
+    background_color: 0.3,0.4,0.5,1
+    color: (1,1,1,1)
+    size_hint: 0.4, 0.10
+    allow_stretch: True
+    keep_ratio: True
+
+<ToggleButton>:
+    size_hint_y: None
+    height: '48dp'
+<Label>:
+    text_size: cm(20), cm(4)
+    font_size: '30sp'
+    halign: 'center'
+    valign: 'middle'
 
 <ImageButton>:
     allow_stretch: True
     keep_ratio: False
     on_press:
-        m = app.root.ids.ci.ids.moves  # Grab the ids to reach across classes
-        s = app.root.ids.ci.ids.score
-        app.root.ids.ci.counter(m, s)  # ImageButton has no attribute "counter"
-    #on_press: roooooot.counter(moves,score)  # ImageButton has no attribute "counter"
-
-<Button>:
-    font_size:30
-    background_color: 0.3,0.4,0.5,1
-    color: (1,1,1,1)
-    size_hint: 0.5, 0.2
-<ToggleButton>:
-    size_hint_y: None
-    height: '48dp'
-
-<Label>:
-    text_size: cm(9), cm(4)
-    font_size: '30sp'
-    halign: 'center'
-    valign: 'middle'
+        cs = app.root.current
+        m = app.root.get_screen(cs).ids.solo.ids.moves  # Grab the ids to reach across classes
+        s = app.root.get_screen(cs).ids.solo.ids.score
+        si = app.root.get_screen(cs).ids.solo.ids.sink
+        app.root.get_screen(cs).ids.solo.counter(m, s ,si)
 
 <FirstWindow>:
-    name: "first"
-
     FloatLayout:
         Label:
-
             pos: 0,150
             text: " BATTLE SHIPS"
-
         Label:
             pos: 0,50
-            font_size: '20sp'
-            text:"by Nicolas and Jim \n\n A computer science project game"
-
-
+            font_size: '15sp'
+            text:"by Nicolas  & Jim De  \n\n A computer science project game"
         GridLayout:
             pos_hint: {"x": 0.25, "bottom":1}
-            size_hint: 0.5, 0.2
+            size_hint: 0.5, 0.15
             cols:2
             Button:
                 id: btn1
@@ -64,71 +63,63 @@ WindowManager:
                 on_release:
                     app.root.current = "second"
                     root.manager.transition.direction = "left"
-
             Button:
                 id: btn2
-                text:"quit"
+                text:"Quit"
                 on_release:
                     app.stop()
-
-
-
-
 <SecondWindow>:
-    name: "second"
-    current_value:1
     FloatLayout:
-        Label:
-            pos: 0 , 250
-            text: "Options"
+        GridLayout:
+            pos_hint:{"x":0,"top":1}
+            size_hint: 1,.6
+            spacing: "8dp"
+            rows: 5
+            Label:
+                size_hint : 1,.3
+                text: "Options"
+            GridLayout:
+                cols:3
+                spacing: "8dp"
+                size_hint_y: None
+                height: self.minimum_height
+                Label:
+                    text: "Game mode :"
+                ToggleButton:
+                    id: btnsolo
+                    text: "Solo"
+                    group: "g1"
+                    state: "down"
+                ToggleButton:
+                    id: btnduel
+                    text: "Duel"
+                    group: "g1"
+
+                Label:
+                    text:"Placement mode"
+                ToggleButton:
+                    id: btnrandom
+                    text:"Random"
+                    group: "g2"
+                    state:"down"
+                ToggleButton:
+                    id: btndirectory
+                    text: "Directory"
+                    group: "g2"
+            Label:
+                size_hint : 1,.3
+                text: "You have chosen to play Alone" if btnsolo.state == "down" else "You have chosen to play A duel"
+            Label:
+                size_hint : 1,.3
+                text: "Generating a random ship placement" if btnrandom.state == "down" else "Choosing a ship placement from a directory"
+            Label:
+                color : [1, 0, 0, 1]
+                text: "Please choose an option above" if btnsolo.state == "normal" and btnduel.state == "normal" or btnrandom.state == "normal" and btndirectory.state == "normal" else ""
 
         GridLayout:
-            pos: 0 , 350
+            size_hint: 1,.15
+            spacing: "100dp"
             cols:3
-            spacing: '8dp'
-            size_hint_y: None
-            height: self.minimum_height
-
-            Label:
-                text:"Choose"
-
-            ToggleButton:
-                id:btnsolo
-                text: 'Solo'
-                group: 'g1'
-                state:'down'
-                on_press: root.current_value = 1
-            ToggleButton:
-                id: btnduel
-                text: 'Duel'
-                group: 'g1'
-                on_press: root.current_value =2
-
-            Label:
-                text:"Ships placement"
-
-            ToggleButton:
-                id:btnrandom
-                text: 'Random'
-                group: 'g2'
-                state:'down'
-                on_press: root.current_value =3
-            ToggleButton:
-                id:btnmyself
-                text: 'Myself'
-                group: 'g2'
-                on_press: root.current_value =4
-            Label:
-              #  text: "option 1" if btnsolo.state == 'normal'
-
-
-
-        GridLayout:
-
-            cols:3
-            spacing: '100dp'
-            size_hint: 1, 0.15
-            pos_hint: {"x": 0, "bottom":1}
 
             Button:
                 id: 'btn3'
@@ -147,325 +138,88 @@ WindowManager:
                     app.root.current = "first"
                     root.manager.transition.direction = "right"
 
-<P>:
-    GridLayout:
-        pos_hint: {"x":0,"top":1}
-        cols:1
-        size_hint: 1, 1
-        GridLayout:
-            size_hint: 1,.2
-            pos_hint: {"x":0,"top":1}
-            cols:3
-            Label:
-                text: "Name :"
-            Label:
-                text: "Date :"
-            Label:
-                text: "Points :"
-        GridLayout:
-            cols:3
-            rows:5
-            Label:
-                text: "xavier"
-            Label:
-                text: "12/02/19"
-            Label:
-                text: "98"
-
 <ThirdWindow>:
-    name: "third"
-    Counter:
-        id: ci
-
-<FourthWindow>:
-    name :"fourth"
     GridLayout:
-        #position :"horizontal"
-        rows:2
-        GridLayout:
-            size_hint: 1,.2
-            cols : 2
-            Label:
-                text: "player 1"
-            Label:
-                text:"player 2"
-
-        GridLayout:
-            cols : 2
-            Counter:
-            Button:
-                text:"next"
-
-
-<Counter>:
-    GridLayout:
-        rows :2
-        GridLayout:
-            size_hint: 1,.3
-            cols:4
-            Label:
-                text:"Moves :"
-
-            LabelMoves:
-                id: moves
-                text:"0"
-
-            Label:
-                text:"Score :"
-
-            LabelScore:
-                id: score
-                text: "00"
+        rows: 2
+        Counter:
+            id: solo
         GridLayout:
             cols:2
-            GridLayout:
-                cols:11
-                Label :
-                    text :""
-                Label :
-                    text :"1"
-                Label :
-                    text :"2"
-                Label :
-                    text :"3"
-                Label :
-                    text :"4"
-                Label :
-                    text :"5"
-                Label :
-                    text :"6"
-                Label :
-                    text :"7"
-                Label :
-                    text :"8"
-                Label :
-                    text :"9"
-                Label :
-                    text :"10"
-                Label:
-                    text: "A"
-                ImageButton:
-                    group: 'a1'
-                ImageButton:
-                    group: "a2"
-                ImageButton:
-                    group: "a3"
-                ImageButton:
-                    group: "a4"
-                ImageButton:
-                    group: "a5"
-                ImageButton:
-                    group: "a6"
-                ImageButton:
-                    group: "a7"
-                ImageButton:
-                    group: "a8"
-                ImageButton:
-                    group: "a9"
-                ImageButton:
-                    group: "a10"
-                Label:
-                    text: "B"
-                ImageButton:
-                    group: 'b1'
-                ImageButton:
-                    group: 'b2'
-                ImageButton:
-                    group: 'b3'
-                ImageButton:
-                    group: 'b4'
-                ImageButton:
-                    group: 'b5'
-                ImageButton:
-                    group: 'b6'
-                ImageButton:
-                    group: 'b7'
-                ImageButton:
-                    group: 'b8'
-                ImageButton:
-                    group: 'b9'
-                ImageButton:
-                    group: 'b10'
-                Label:
-                    text: "C"
-
-                ImageButton:
-                    group: 'c1'
-                ImageButton:
-                    group: 'c2'
-                ImageButton:
-                    group: 'c3'
-                ImageButton:
-                    group: 'c4'
-                ImageButton:
-                    group: "c5"
-                ImageButton:
-                    group: "c6"
-                ImageButton:
-                    group: "c7"
-                ImageButton:
-                    group: "c8"
-                ImageButton:
-                    group: "c9"
-                ImageButton:
-                    group: "c10"
-                Label:
-                    text: "D"
-                ImageButton:
-                    group: "d1"
-                ImageButton:
-                    group: "d2"
-                ImageButton:
-                    group: "d3"
-                ImageButton:
-                    group: "d4"
-                ImageButton:
-                    group: "d5"
-                ImageButton:
-                    group: "d6"
-                ImageButton:
-                    group: "d7"
-                ImageButton:
-                    group: "d8"
-                ImageButton:
-                    group: "d9"
-                ImageButton:
-                    group: "d10"
-                Label:
-                    text: "E"
-                ImageButton:
-                    group: "e1"
-                ImageButton:
-                    group: "e2"
-                ImageButton:
-                    group: "e3"
-                ImageButton:
-                    group: "e4"
-                ImageButton:
-                    group: "e5"
-                ImageButton:
-                    group: "e6"
-                ImageButton:
-                    group: "e7"
-                ImageButton:
-                    group: "e8"
-                ImageButton:
-                    group: "e9"
-                ImageButton:
-                    group: "e10"
-                Label:
-                    text: "F"
-                ImageButton:
-                    group: "f1"
-                ImageButton:
-                    group: "f2"
-
-                ImageButton:
-                    group: "f3"
-                ImageButton:
-                    group: "f4"
-                ImageButton:
-                    group: "f5"
-                ImageButton:
-                    group: "f6"
-                ImageButton:
-                    group: "f7"
-                ImageButton:
-                    group: "f8"
-                ImageButton:
-                    group: "f9"
-                ImageButton:
-                    group: "f10"
-                Label:
-                    text: "G"
-                ImageButton:
-                    group: "g1"
-                ImageButton:
-                    group: "g2"
-                ImageButton:
-                    group: "g3"
-                ImageButton:
-                    group: "g4"
-                ImageButton:
-                    group: "g5"
-                ImageButton:
-                    group: "g6"
-                ImageButton:
-                    group: "g7"
-                ImageButton:
-                    group: "g8"
-                ImageButton:
-                    group: "g9"
-                ImageButton:
-                    group: "g10"
-                Label:
-                    text: "H"
-                ImageButton:
-                    group: "h1"
-                ImageButton:
-                    group: "h2"
-                ImageButton:
-                    group: "h3"
-                ImageButton:
-                    group: "h4"
-                ImageButton:
-                    group: "h5"
-                ImageButton:
-                    group: "h6"
-                ImageButton:
-                    group: "h7"
-                ImageButton:
-                    group: "h8"
-                ImageButton:
-                    group: "h9"
-                ImageButton:
-                    group: "h10"
-                Label:
-                    text: "I"
-                ImageButton:
-                    group: "i1"
-                ImageButton:
-                    group: "i2"
-                ImageButton:
-                    group: "i3"
-                ImageButton:
-                    group: "i4"
-                ImageButton:
-                    group: "i5"
-                ImageButton:
-                    group: "i6"
-                ImageButton:
-                    group: "i7"
-                ImageButton:
-                    group: "i8"
-                ImageButton:
-                    group: "i9"
-                ImageButton:
-                    group: "i10"
-                Label:
-                    text: "J"
-                ImageButton:
-                    group: "j1"
-                ImageButton:
-                    group: "j2"
-                ImageButton:
-                    group: "j3"
-                ImageButton:
-                    group: "j4"
-                ImageButton:
-                    group: "j5"
-                ImageButton:
-                    group: "j6"
-                ImageButton:
-                    group: "j7"
-                ImageButton:
-                    group: "j8"
-                ImageButton:
-                    group: "j9"
-                ImageButton:
-                    group: "j10"
+            MyWidget:
+                box: box
+                cols: 11
+                id: box
+            Image:
+                size_hint: .4,1
+                source: "bataille.jpg"
+<FourthWindow>:
+    GridLayout:
+        rows: 2
+        GridLayout:
+            size_hint: 1,.3
+            cols:2
+            Label:
+                text:"Player 1"
+            Label:
+                text:"Player 2"
+            Counter:
+                id: duelp1
+            Counter:
+                id: duelp2
+        GridLayout:
+            cols:3
+            MyWidget:
+                box: boxp1
+                cols: 11
+                id: boxp1
             Image:
                 size_hint : .4, 1
                 source:'bataille.jpg'
+            MyWidget:
+                box: boxp2
+                cols: 11
+                id: boxp2
+<Counter>:
+    size_hint: 1,.3
+    cols:5
+    Label:
+        text:"Moves :"
+    LabelMoves:
+        id: moves
+        text:"0"
+    LabelSink:
+        id: sink
+        font_size: '20sp'
+        text : "ships touched"
+    Label:
+        text:"Score :"
+    LabelScore:
+        id: score
+        text: "0"
 
+<Pop>:
+    id: pop
+    auto_dismiss: False
+    title: "Scores"
+    GridLayout:
+        rows: 3
+        Label:
+            text:"tatata scores"
+        GridLayout:
+            cols:2
+            Label:
+                text: "You got :"
 
+            Label:
+                text: "pseudo"
+            TextInput:
+                id: pseudo
+                multiline : False
+        Button:
+            text: "submit"
+            size_hint: .8,.2
+            pos_hint : {"x": .1, "y":.1}
+            on_press:
+                pop.dismiss() #if pseudo.text != "" else
+                app.root.current = "second" #if pseudo.text != ""
+                app.root.transition.direction = "right"
