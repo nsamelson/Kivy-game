@@ -7,14 +7,13 @@ WindowManager:
         name: "third"
     FourthWindow:
         name: "fourth"
-    ScoreTab:
-        name: "scoretab"
+    FifthWindow:
+        name: "fifth"
+
 <LabelMoves@Label>:
     size_hint : 0.5,1
 <LabelSink@Label>:
     size_hint: .5,.3
-
-
 <LabelScore@Label>:
     size_hint : 0.5,1
     text_size: cm(4), cm(4)
@@ -123,7 +122,7 @@ WindowManager:
                 id: 'btn3'
                 text:"Scores"
                 on_release :
-                    app.root.current = "scoretab"
+                    app.root.current = "fifth"
                     root.manager.transition.direction = "up"
             Button:
                 id: 'btn4'
@@ -158,6 +157,84 @@ WindowManager:
             Image:
                 size_hint: .4,1
                 source: "bataille.jpg"
+
+<FifthWindow>:
+    GridLayout:
+        rows: 3
+        Label:
+            size_hint : 1,.3
+            text: "Scores"
+        GridLayout:
+            cols:2
+            #tab: tab
+            #id : tab
+            ScoreTab:
+                cols: 2
+                tab : tab
+                id: tab
+        Button:
+            size_hint: 0.1, 0.30
+            allow_stretch: False
+            text: "Back"
+            on_release :
+                app.root.current = "second"
+                root.manager.transition.direction = "down"
+
+<ScoreTab>:
+    cols:2
+
+
+
+<Counter>:
+    size_hint: 1,.3
+    cols:5
+    Label:
+        text:"Moves :"
+    LabelMoves:
+        id: moves
+        text: app.moves
+    LabelSink:
+        id: sink
+        font_size: '20sp'
+        text : app.sink
+    Label:
+        text:"Score :"
+    LabelScore:
+        id: score
+        text: app.score
+
+<Pop>:
+    id: pop
+    auto_dismiss: False
+    title: "Scores"
+    GridLayout:
+        rows: 3
+        Label:
+            text:"Thank You\n\nGo to the menu and click on Scores to see the list.\n\n\nPlease rate our game honestly"
+        GridLayout:
+            size: root.width -450 , root.height -450
+            pos: 225, 000
+            cols:2
+            Label:
+                text: "You got :"
+            Label:
+                text: app.score
+            Label:
+                text_size: cm(10), cm(8)
+                text: "Enter a name and save your score:"
+            TextInput:
+                on_text: app.player_name = self.text
+                multiline : False
+
+        Button:
+            text: "submit"
+            size_hint: .8,.2
+            pos_hint : {"x": .1, "y":.1}
+            on_release:
+                app.savescore() if app.player_name != "" else print(" enter a name")
+                pop.dismiss() if app.player_name != "" else pop.open()
+                app.root.current = "second" if app.player_name != "" else "third"
+                app.root.transition.direction = "right"
 <FourthWindow>:
     on_enter:
         app.moves = '0'
@@ -191,76 +268,3 @@ WindowManager:
                 box: boxp2
                 cols: 11
                 id: boxp2
-<ScoreTab>:
-    FloatLayout:
-        GridLayout:
-            pos_hint:{"x":0,"top":1}
-            size_hint: 1,.6
-            spacing: "8dp"
-            rows: 3
-            Label:
-                size_hint : 1,.3
-                text: "Scores"
-            GridLayout:
-                cols: 2
-                Label:
-                    text: "Name"
-                Label:
-                    text: "Score out of 100"
-            Button:
-                text: "Back"
-                on_release :
-                    app.root.current = "second"
-                    root.manager.transition.direction = "down"
-
-
-<Counter>:
-    size_hint: 1,.3
-    cols:5
-    Label:
-        text:"Moves :"
-    LabelMoves:
-        id: moves
-        text: app.moves
-    LabelSink:
-        id: sink
-        font_size: '20sp'
-        text : app.sink
-    Label:
-        text:"Score :"
-    LabelScore:
-        id: score
-        text: app.score
-
-<Pop>:
-    #player_name: player_name
-    id: pop
-    auto_dismiss: False
-    title: "Scores"
-    GridLayout:
-        rows: 3
-        Label:
-            text:"tatata scores"
-        GridLayout:
-            cols:2
-            Label:
-                text: "You got :"
-            Label:
-                text: app.score
-            Label:
-                text_size: cm(10), cm(8)
-                text: "Enter a name and save your score:"
-            TextInput:
-
-                on_text: app.player_name = self.text
-                multiline : False
-
-        Button:
-            text: "submit"
-            size_hint: .8,.2
-            pos_hint : {"x": .1, "y":.1}
-            on_release:
-                app.savescore()
-                pop.dismiss() if player_name.text != "" else pop.open()
-                app.root.current = "second" if player_name.text != "" else "third"
-                app.root.transition.direction = "right"

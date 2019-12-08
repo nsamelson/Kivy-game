@@ -23,7 +23,7 @@ Submarine1 = ["H8","I8","J8"]
 Submarine2 = ["H1","H2","H3"]
 Torpedo = ["E2","E3"]
 Ships = [Carrier, Cruiser, Submarine1, Submarine2, Torpedo]
-
+ScoTab =[]
 class WindowManager (ScreenManager):
     pass
 class FirstWindow (Screen):
@@ -38,8 +38,13 @@ class FourthWindow (Screen):
         Window.size = (1150, 500)
     def on_pre_leave(self):
         Window.size = (800, 600)
-class ScoreTab (Screen):
-    pass
+class FifthWindow (Screen,GridLayout):
+    player_name = StringProperty("")
+    score = StringProperty('0')
+
+    def on_pre_enter(self):
+        MyMainApp.savescore(self)
+
 class Counter(GridLayout):
     pass
 
@@ -118,6 +123,17 @@ class ImageButton(ButtonBehavior,Image):
 class Pop (Popup):
     pass
 
+class ScoreTab(GridLayout):
+    tab = ObjectProperty(None)
+
+    def on_tab(self, *args):
+        self.tab.add_widget(Label(text="Name:"))
+        self.tab.add_widget(Label(text="Score out of 100 :"))
+        for m in range(len(ScoTab)):
+            self.tab.add_widget(Label(text=str(ScoTab[m])))
+        print("test")
+
+
 
 
 class MyMainApp (App):
@@ -126,7 +142,8 @@ class MyMainApp (App):
     sink = StringProperty('ships touched')
     bingo = StringProperty("0")
     player_name = StringProperty("")
-    #name = ObjectProperty(None)
+
+
     def counter(self):
         self.sink = str("\n".join(Sunkships))   #It's for telling which ship has been sunk. I have also an issue with it where I must click another button to activate it and show the ship that sank
         self.moves = (str(int(self.moves) + 1))
@@ -138,11 +155,9 @@ class MyMainApp (App):
     def btnduel(self):
         print("duel")
 
-    def savescore(self, filename):
-        self.name = self.player_name
-
-        jsonresult = {'player': self.name, 'score': self.score}
-
+    def savescore(self):
+        filename = "result.json"
+        jsonresult = {'player': self.player_name, 'score': self.score}
         print(jsonresult)
 
         if (os.path.isfile(filename)):
@@ -150,19 +165,22 @@ class MyMainApp (App):
             with open(filename, "r") as file:
                 data = json.load(file)
         else:
-            data = {}
-            data['scores'] = []
+            data = []
+
 
         # ajout d'un nouveau score
-        data['scores'].append({'player': self.name, 'score': self.score})
-
+        if self.player_name!= "" or self.score != "0":
+            data.append({'player': self.player_name, 'score': self.score})
         with open(filename, "w") as file:
             json.dump(data, file)
-            file.close()
-        self.name.text = ""
-    def schow_score(self):
-        pass
+        while len(ScoTab) <= 15:
+            for score in data:
+                ScoTab.insert(0, score["score"])
+                ScoTab.insert(0, score["player"])
+
+        print(ScoTab)
+
+
 
 if __name__ == "__main__":
     MyMainApp().run()
-    FileName ="C:/Users/nisam/Documents/ECAM/info/Battleship game v5.0/result.json"
