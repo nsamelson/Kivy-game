@@ -38,7 +38,8 @@ class FourthWindow (Screen):
         Window.size = (1150, 500)
     def on_pre_leave(self):
         Window.size = (800, 600)
-
+class ScoreTab (Screen):
+    pass
 class Counter(GridLayout):
     pass
 
@@ -115,12 +116,8 @@ class ImageButton(ButtonBehavior,Image):
         popsave.open()
 
 class Pop (Popup):
-    name = ObjectProperty(None)
-    bridgename = ObjectProperty(None)
-    def savebridge(self):
-        print(self.bridgename.text)
-        self.name = str(self.bridgename)
-        print(self.name)
+    pass
+
 
 
 class MyMainApp (App):
@@ -128,6 +125,7 @@ class MyMainApp (App):
     score = StringProperty('0')
     sink = StringProperty('ships touched')
     bingo = StringProperty("0")
+    player_name = StringProperty("")
     #name = ObjectProperty(None)
     def counter(self):
         self.sink = str("\n".join(Sunkships))   #It's for telling which ship has been sunk. I have also an issue with it where I must click another button to activate it and show the ship that sank
@@ -141,6 +139,7 @@ class MyMainApp (App):
         print("duel")
 
     def savescore(self, filename):
+        self.name = self.player_name
 
         jsonresult = {'player': self.name, 'score': self.score}
 
