@@ -138,7 +138,7 @@ def get_ships_random():
                 Cruiser.append(Alpha[chosen_grille_1.index(line)] + str(line.index(col) + 1))
             if col ==1:
                 Carrier.append(Alpha[chosen_grille_1.index(line)] + str(line.index(col) + 1))
-
+#SOMETHING IS NOT RIGHT JUST ABOVE BUT WHERE?
 
 get_ships_random()
 print(Ships)
