@@ -7,7 +7,7 @@ from kivy.properties import (StringProperty, ObjectProperty, OptionProperty,Nume
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.core.window import Window
-
+import random
 import json
 import os
 
@@ -17,13 +17,18 @@ Copy=[]
 Sunk=[]
 Sunkships =[]
 Bingo = []
-Carrier = ["B2","B3","B4","B5","B6"]
-Cruiser = ["A9","B9","C9","D9"]
-Submarine1 = ["H8","I8","J8"]
-Submarine2 = ["H1","H2","H3"]
-Torpedo = ["E2","E3"]
-Ships = [Carrier, Cruiser, Submarine1, Submarine2, Torpedo]
+Ships=[]
 ScoTab =[]
+
+filename = "result.json"
+if (os.path.isfile(filename)):
+    # lecture des scores
+    with open(filename, "r") as file:
+        data = json.load(file)
+else:
+    data = []
+
+
 class WindowManager (ScreenManager):
     pass
 class FirstWindow (Screen):
@@ -39,11 +44,7 @@ class FourthWindow (Screen):
     def on_pre_leave(self):
         Window.size = (800, 600)
 class FifthWindow (Screen,GridLayout):
-    player_name = StringProperty("")
-    score = StringProperty('0')
-
-    def on_pre_enter(self):
-        MyMainApp.savescore(self)
+    pass
 
 class Counter(GridLayout):
     pass
@@ -127,14 +128,60 @@ class ScoreTab(GridLayout):
     tab = ObjectProperty(None)
 
     def on_tab(self, *args):
-        self.tab.add_widget(Label(text="Name:"))
-        self.tab.add_widget(Label(text="Score out of 100 :"))
-        for m in range(len(ScoTab)):
-            self.tab.add_widget(Label(text=str(ScoTab[m])))
-        print("test")
+        for score in data:
+            ScoTab.insert(0, score["score"])
+            ScoTab.insert(0, score["player"])
+        if len(ScoTab) < 16:
+            for m in range(len(ScoTab)):
+                self.tab.add_widget(Label(text=str(ScoTab[m])))
+        else:
+            for m in range(16):
+                self.tab.add_widget(Label(text=str(ScoTab[m])))
 
+        print(ScoTab)
 
+def load_game_file():  # Implement as you need to load game files.
+    with open('Grille_1.txt', 'r') as f:
+        board = f.readlines()
+    return board
+def separate_subs(two_subs):  # find the 2 subs in the list
+    # find the lowest value for a sub search across then down.
+    sorted_subs = sorted(two_subs)  # todo: 10 is messing up the sort, need a custom compare or another fix
+    f = sorted_subs[0]
+    # if there are 3 s across and not 3 down then horizontal else vertical
+    if f[0] + str(int(f[1:]) + 1) in two_subs and f[0] + str(int(f[1:]) + 2) in two_subs and \
+       not (str(chr(ord(f[0]) + 1)) + f[1:] in two_subs and str(chr(ord(f[0]) + 2)) + f[1:]) in two_subs:
+        # horizontal sub
+        sub_1 = [f, f[0] + str(int(f[1:]) + 1), f[0] + str(int(f[1:]) + 2)]
+    else:
+        # vertical sub
+        sub_1 = [f, str(chr(ord(f[0]) + 1)) + f[1:], str(chr(ord(f[0]) + 2)) + f[1:]]
+    # remove sub_1 from two_subs to get sub_2
+    for pos in sub_1:
+        two_subs.remove(pos)
+    sub_2 = two_subs
+    return sub_1, sub_2
 
+def get_ships(random=True):
+    locations = {'c': [], 'p': [], 's': [], 't': []}
+    rows = ['*', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '*']
+
+    if not random:
+        board = load_game_file()
+        for row in board:  # print board
+            print(row, end='')
+    else:
+        board = generate_game_board()
+        for row in board:  # print board
+            print(row)
+
+    for row in range(1, 11):  # ignore first and last rows in board
+        for i, c in enumerate(board[row]):
+            if c in ['c', 'p', 's', 't']:
+                locations[c] += [rows[row] + str(i)]  # Need to split of the 2 subs
+    s1, s2 = separate_subs(locations['s'])  # the two subs end up on one list, find and put on separate lists
+    del locations['s']  # remove the subs from the locations list
+    return [v for k, v in locations.items()] + [s1] + [s2]  # add the 2 subs to the rest of the locations
 
 class MyMainApp (App):
     moves = StringProperty('0')
@@ -156,31 +203,19 @@ class MyMainApp (App):
         print("duel")
 
     def savescore(self):
-        filename = "result.json"
+
         jsonresult = {'player': self.player_name, 'score': self.score}
         print(jsonresult)
-
-        if (os.path.isfile(filename)):
-            # lecture des scores
-            with open(filename, "r") as file:
-                data = json.load(file)
-        else:
-            data = []
-
-
         # ajout d'un nouveau score
         if self.player_name!= "" or self.score != "0":
             data.append({'player': self.player_name, 'score': self.score})
         with open(filename, "w") as file:
             json.dump(data, file)
-        while len(ScoTab) <= 15:
-            for score in data:
-                ScoTab.insert(0, score["score"])
-                ScoTab.insert(0, score["player"])
-
-        print(ScoTab)
-
-
-
+    def directory(self):
+        Ships = get_ships(random=False)
+        print(Ships, end ="\n\n")
+    def full_random(self):
+        Ships = get_ships(random=True)
+        print(Ships, end='\n\n')
 if __name__ == "__main__":
     MyMainApp().run()
