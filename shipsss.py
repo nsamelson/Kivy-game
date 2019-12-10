@@ -10,12 +10,7 @@ ship[3] = 2  #torpilleur (2 cases)
 ship[4] = 3  #Sous-marin 1 (3 cases)   #s
 ship[5] = 3  #Sous-marin 2 ( cases)    #m """
 Alpha =["A","B","C","D","E","F","G","H","I","J"]
-Carrier = []
-Cruiser = []
-Submarine1 = []
-Submarine2 = []
-Torpedo = []
-Ships = [Carrier, Cruiser, Submarine1, Submarine2, Torpedo]
+
 
 
 
@@ -124,9 +119,16 @@ full_random = True
 if full_random : # si on appuie sur Random, le placement est full random. A adapter avec le notation de Nico.
      chosen_grille_1 = generate_full_random_grid()
      chosen_grille_2 = generate_full_random_grid()
-print(chosen_grille_1)
+
 def get_ships_random():
+    Carrier = []
+    Cruiser = []
+    Submarine1 = []
+    Submarine2 = []
+    Torpedo = []
+    Ships=[Carrier, Cruiser, Submarine1, Submarine2, Torpedo]
     for line in chosen_grille_1:
+        print(line)
         for col in line:
             if col == 5:
                 Torpedo.append(Alpha[chosen_grille_1.index(line)]+str(line.index(col) + 1))
@@ -138,7 +140,6 @@ def get_ships_random():
                 Cruiser.append(Alpha[chosen_grille_1.index(line)] + str(line.index(col) + 1))
             if col ==1:
                 Carrier.append(Alpha[chosen_grille_1.index(line)] + str(line.index(col) + 1))
-#SOMETHING IS NOT RIGHT JUST ABOVE BUT WHERE?
+    print(Ships)
 
 get_ships_random()
-print(Ships)
