@@ -17,7 +17,7 @@ Copy=[]
 Sunk=[]
 Sunkships =[]
 Bingo = []
-Ships=[]
+Ships=[]        # THIS LIST STAYS EMPTY, I want it to be filled with the coordinates I retrieved from random or directory
 ScoTab =[]
 
 filename = "result.json"
@@ -213,7 +213,7 @@ class MyMainApp (App):
             json.dump(data, file)
     def directory(self):
         Ships = get_ships(random=False)
-        print(Ships, end ="\n\n")
+        print(Ships, end ="\n\n") #here it does print the good list but what I want is to use it anywhere in my code and as it's under a class I can't...
     def full_random(self):
         Ships = get_ships(random=True)
         print(Ships, end='\n\n')
