@@ -129,6 +129,7 @@ WindowManager:
                 text:"Play"
                 on_release:
                     app.btnsolo() if btnsolo.state == "down" else app.btnduel()
+                    app.directory() if btndirectory.state == "down" else app.full_random()
                     app.root.current = "third" if btnsolo.state == "down" else "fourth"
                     root.manager.transition.direction = "left"  #SI SOLO ON
             Button:
@@ -160,29 +161,35 @@ WindowManager:
 
 <FifthWindow>:
     GridLayout:
-        rows: 3
+        spacing: "8dp"
+        rows: 4
         Label:
-            size_hint : 1,.3
+
+            size_hint : 1,.2
             text: "Scores"
+        GridLayout:
+            size_hint : 1,.2
+            cols:2
+            Label:
+                text: "Name: "
+            Label:
+                text: "Score out of 100 :"
         GridLayout:
             cols:2
             #tab: tab
             #id : tab
             ScoreTab:
                 cols: 2
+                #rows: 8
                 tab : tab
                 id: tab
         Button:
-            size_hint: 0.1, 0.30
+            size_hint: 0.1, 0.25
             allow_stretch: False
             text: "Back"
             on_release :
                 app.root.current = "second"
                 root.manager.transition.direction = "down"
-
-<ScoreTab>:
-    cols:2
-
 
 
 <Counter>:
@@ -210,7 +217,7 @@ WindowManager:
     GridLayout:
         rows: 3
         Label:
-            text:"Thank You\n\nGo to the menu and click on Scores to see the list.\n\n\nPlease rate our game honestly"
+            text:"Well Played\n\nGo to the menu and click on Scores to see the list\n\nPlease rate our game honestly"
         GridLayout:
             size: root.width -450 , root.height -450
             pos: 225, 000
