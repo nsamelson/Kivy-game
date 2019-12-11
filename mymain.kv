@@ -158,7 +158,40 @@ WindowManager:
             Image:
                 size_hint: .4,1
                 source: "bataille.jpg"
-
+<FourthWindow>:
+    on_enter:
+        app.moves = '0'
+        app.score = '0'
+        app.sink = ''
+        app.bingo = "0"
+        boxp1.reset_board()
+        boxp2.reset_board()
+    GridLayout:
+        rows: 2
+        GridLayout:
+            size_hint: 1,.3
+            cols:2
+            Label:
+                text:"Player 1"
+            Label:
+                text:"Player 2"
+            Counter:
+                id: duelp1
+            Counter:
+                id: duelp2
+        GridLayout:
+            cols:3
+            MyWidget:
+                box: boxp1
+                cols: 11
+                id: boxp1
+            Image:
+                size_hint : .4, 1
+                source:'bataille.jpg'
+            MyWidget:
+                box: boxp2
+                cols: 11
+                id: boxp2
 <FifthWindow>:
     GridLayout:
         spacing: "8dp"
@@ -242,36 +275,3 @@ WindowManager:
                 pop.dismiss() if app.player_name != "" else pop.open()
                 app.root.current = "second" if app.player_name != "" else "third"
                 app.root.transition.direction = "right"
-<FourthWindow>:
-    on_enter:
-        app.moves = '0'
-        app.score = '0'
-        app.sink = ''
-        app.bingo = "0"
-        box.reset_board()
-    GridLayout:
-        rows: 2
-        GridLayout:
-            size_hint: 1,.3
-            cols:2
-            Label:
-                text:"Player 1"
-            Label:
-                text:"Player 2"
-            Counter:
-                id: duelp1
-            Counter:
-                id: duelp2
-        GridLayout:
-            cols:3
-            MyWidget:
-                box: boxp1
-                cols: 11
-                id: boxp1
-            Image:
-                size_hint : .4, 1
-                source:'bataille.jpg'
-            MyWidget:
-                box: boxp2
-                cols: 11
-                id: boxp2
