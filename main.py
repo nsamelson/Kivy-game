@@ -10,6 +10,7 @@ from kivy.core.window import Window
 import random
 import json
 import os
+from random import choice, randrange
 
 Alpha =["A","B","C","D","E","F","G","H","I","J"]
 Wreck=[]
@@ -17,7 +18,7 @@ Copy=[]
 Sunk=[]
 Sunkships =[]
 Bingo = []
-Ships=[]        # THIS LIST STAYS EMPTY, I want it to be filled with the coordinates I retrieved from random or directory
+Ships=[]
 ScoTab =[]
 
 filename = "result.json"
@@ -36,7 +37,9 @@ class FirstWindow (Screen):
 class SecondWindow (Screen):
     pass
 class ThirdWindow (Screen):
-    pass
+    def on_enter(self, *args):
+        Ships = ship_list
+        print(Ships)
 
 class FourthWindow (Screen):
     def on_pre_enter(self):
@@ -140,13 +143,17 @@ class ScoreTab(GridLayout):
 
         print(ScoTab)
 
+grille = choice(["Grille_1.txt", "Grille_2.txt"])
 def load_game_file():  # Implement as you need to load game files.
-    with open('Grille_1.txt', 'r') as f:
+    with open(grille, 'r') as f:
         board = f.readlines()
     return board
+def subs_key(pos):
+    return ord(pos[0]) * 100 + int(pos[1:])
 def separate_subs(two_subs):  # find the 2 subs in the list
     # find the lowest value for a sub search across then down.
-    sorted_subs = sorted(two_subs)  # todo: 10 is messing up the sort, need a custom compare or another fix
+
+    sorted_subs = sorted(two_subs, key=subs_key)
     f = sorted_subs[0]
     # if there are 3 s across and not 3 down then horizontal else vertical
     if f[0] + str(int(f[1:]) + 1) in two_subs and f[0] + str(int(f[1:]) + 2) in two_subs and \
@@ -212,10 +219,13 @@ class MyMainApp (App):
         with open(filename, "w") as file:
             json.dump(data, file)
     def directory(self):
-        Ships = get_ships(random=False)
-        print(Ships, end ="\n\n") #here it does print the good list but what I want is to use it anywhere in my code and as it's under a class I can't...
+        ship_list = get_ships(random=False)
+        print(ship_list, end ="\n\n")
+
     def full_random(self):
-        Ships = get_ships(random=True)
-        print(Ships, end='\n\n')
+        ship_list = get_ships(random=True)
+        print(ship_list, end='\n\n')
+
+
 if __name__ == "__main__":
     MyMainApp().run()
