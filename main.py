@@ -20,7 +20,13 @@ Sunkships =[]
 Bingo = []
 Ships=[]
 ScoTab =[]
-
+Ships2=[]
+Wreck2=[]
+Copy2=[]
+Sunk2=[]
+Sunkships2 =[]
+Bingo2 = []
+Player=[Ships,Ships2]
 filename = "result.json"
 if (os.path.isfile(filename)):
     # lecture des scores
@@ -38,7 +44,6 @@ class SecondWindow (Screen):
     pass
 class ThirdWindow (Screen):
     def on_enter(self, *args):
-        Ships = ship_list
         print(Ships)
 
 class FourthWindow (Screen):
@@ -47,11 +52,11 @@ class FourthWindow (Screen):
     def on_pre_leave(self):
         Window.size = (800, 600)
 class FifthWindow (Screen,GridLayout):
-    pass
+    def on_enter(self):
+        global ScoTab
 
 class Counter(GridLayout):
     pass
-
 
 class MyWidget(GridLayout):
     def __init__(self, **kwargs):
@@ -82,44 +87,80 @@ class ImageButton(ButtonBehavior,Image):
         self.disabled = False
 
     def on_press(self):
+        global Ships
+        global Ships2
         self.source = "blue2.png"
         self.disabled = True
         print(self.id)
-        for ship in Ships:
-            for xy in ship:
-                if self.id == xy:
-                    self.source = "red.png"
-                    ord = ship.index(xy)
-                    ship.pop(ord)
-                    Wreck.append(xy)
-                    Bingo.append(xy)
-            if len(ship) == 0:
-                Copy = Wreck.copy()
-                Sunk.append(Copy)
-                if len(Copy) ==2:
-                    Sunkships.append("Torpedo")
-                elif len(Copy) ==3:
-                    Sunkships.append("Submarine")
-                elif len(Copy) ==4:
-                    Sunkships.append("Cruiser")
-                elif len(Copy) ==5:
-                    Sunkships.append("Carrier")
-                Wreck.clear()
-                sunk = Ships.index(ship)
-                Ships.pop(sunk)
+        for shipss in Player:
+            for ship in shipss:
+                for xy in ship:
+                    if Player.index(shipss) == 0:
+                        if self.id == xy:
+                            self.source = "red.png"
+                            ord = ship.index(xy)
+                            ship.pop(ord)
+                            Wreck.append(xy)
+                            Bingo.append(xy)
+                    elif Player.index(shipss)==1:
+                        if self.id == xy:
+                            self.source = "red.png"
+                            ord2 = ship.index(xy)
+                            ship.pop(ord2)
+                            Wreck2.append(xy)
+                            Bingo2.append(xy)
+                if Player.index(shipss) == 0:
+                    if len(ship) == 0:
+                        Copy = Wreck.copy()
+                        Sunk.append(Copy)
+                        if len(Copy) ==2:
+                            Sunkships.append("Torpedo")
+                        elif len(Copy) ==3:
+                            Sunkships.append("Submarine")
+                        elif len(Copy) ==4:
+                            Sunkships.append("Cruiser")
+                        elif len(Copy) ==5:
+                            Sunkships.append("Carrier")
+                        Wreck.clear()
+                        sunk = Ships.index(ship)
+                        Ships.pop(sunk)
+                elif Player.index(shipss) == 1:
+                    if len(ship) == 0:
+                        Copy2 = Wreck2.copy()
+                        Sunk2.append(Copy2)
+                        if len(Copy2) ==2:
+                            Sunkships2.append("Torpedo")
+                        elif len(Copy2) ==3:
+                            Sunkships2.append("Submarine")
+                        elif len(Copy2) ==4:
+                            Sunkships2.append("Cruiser")
+                        elif len(Copy2) ==5:
+                            Sunkships2.append("Carrier")
+                        Wreck2.clear()
+                        sunk2 = Ships.index(ship)
+                        Ships2.pop(sunk2)
+
 
 
     def on_release(self):
-        if len(Ships) ==0:
-            Sunkships.clear()
-            Sunkships.append("Touché Coulé")
-            print("Touché coulé")
-            self.popopen()
-            Wreck.clear()
-            Copy.clear()
-            Sunk.clear()
-            Sunkships.clear()
-            Bingo.clear()
+        global Ships2
+        global Ships
+        for shipss in Player:
+            if len(shipss) ==0:
+                Sunkships.clear()
+                Sunkships.append("Touché Coulé")
+                print("Player",str(Player.index(shipss)+1)," wins")
+                self.popopen()
+                Wreck.clear()
+                Copy.clear()
+                Sunk.clear()
+                Sunkships.clear()
+                Bingo.clear()
+                Wreck2.clear()
+                Copy2.clear()
+                Sunk2.clear()
+                Sunkships2.clear()
+                Bingo2.clear()
     def popopen(self):
         popsave = Pop()
         popsave.open()
@@ -128,6 +169,8 @@ class Pop (Popup):
     pass
 
 class ScoreTab(GridLayout):
+    global ScoTab
+    global data
     tab = ObjectProperty(None)
 
     def on_tab(self, *args):
@@ -142,10 +185,54 @@ class ScoreTab(GridLayout):
                 self.tab.add_widget(Label(text=str(ScoTab[m])))
 
         print(ScoTab)
+def _collision(b, orientation, p_row, p_col, length):  # placing a ship on an existing ship is a collision
+    if orientation == 'horizontal':
+        for i in range(length):
+            if b[p_row][p_col + i] != ' ':
+                return True
+    else:  # orientation == 'vertical'
+        for i in range(length):
+            if b[p_row + i][p_col] != ' ':
+                return True
+    return False
 
-grille = choice(["Grille_1.txt", "Grille_2.txt"])
+
+def generate_game_board():
+    length = {'p': 5, 's': 3, 'c': 4, 't': 2}
+    top_bottom = ['*'] * 12  # Top or bottom frame
+    mid = ['*'] + [' '] * 10 + ['*']  # The play area, create a list of lists to place ships
+    board = [top_bottom, mid.copy(), mid.copy(), mid.copy(), mid.copy(), mid.copy(),  # make copies for play area
+             mid.copy(), mid.copy(), mid.copy(), mid.copy(), mid.copy(), top_bottom]
+    ships = ['p', 's', 's', 'c', 't']
+
+    for ship in ships:
+        orientation = choice(['horizontal', 'vertical'])
+        if orientation == 'horizontal':
+            row = randrange(1, 11)
+            col = randrange(1, 12 - length[ship])  # ensures ship will fit
+            while _collision(board, orientation, row, col, length[ship]):  # if overlap, pick a new spot
+                row = randrange(1, 11)
+                col = randrange(1, 12 - length[ship])  # ensures ship will fit
+            for i in range(length[ship]):
+                board[row][col + i] = ship
+        else:  # orientation == vertical
+            row = randrange(1, 12 - length[ship])  # ensures ship will fit
+            col = randrange(1, 11)
+            while _collision(board, orientation, row, col, length[ship]):  # if overlap, pick a new spot
+                row = randrange(1, 12 - length[ship])  # ensures ship will fit
+                col = randrange(1, 11)
+            for i in range(length[ship]):
+                board[row + i][col] = ship
+
+    bl = []  # convert board from a list of lists to a list of strings to match the file format
+    for b in board:
+        bl += [''.join(b)]
+    return bl
+
+grille = choice(["Grille_2.txt", "Grille_1.txt"])
 def load_game_file():  # Implement as you need to load game files.
     with open(grille, 'r') as f:
+        print(grille)
         board = f.readlines()
     return board
 def subs_key(pos):
@@ -210,7 +297,7 @@ class MyMainApp (App):
         print("duel")
 
     def savescore(self):
-
+        global data
         jsonresult = {'player': self.player_name, 'score': self.score}
         print(jsonresult)
         # ajout d'un nouveau score
@@ -219,12 +306,19 @@ class MyMainApp (App):
         with open(filename, "w") as file:
             json.dump(data, file)
     def directory(self):
-        ship_list = get_ships(random=False)
-        print(ship_list, end ="\n\n")
+        global Ships
+        global Ships2
+        Ships = get_ships(random=False)
+        Ships2 = get_ships(random=False)
+        print(Ships, end ="\n\n")
+
 
     def full_random(self):
-        ship_list = get_ships(random=True)
-        print(ship_list, end='\n\n')
+        global Ships
+        global Ships2
+        Ships = get_ships(random=True)
+        Ships2 = get_ships(random=False)
+        print(Ships, end='\n\n')
 
 
 if __name__ == "__main__":
